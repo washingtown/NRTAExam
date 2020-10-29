@@ -1,0 +1,13 @@
+﻿{
+  "RegisterUserInfo": {
+    "DefaultPassword": "password",
+    "Username": "ExampleName",
+    "RealNames": [
+      "张伟",
+      "李明",
+      "王倩",
+      "刘敏",
+      "赵思"
+    ]
+  }
+}
