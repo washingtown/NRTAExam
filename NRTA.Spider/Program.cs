@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using NRTA.Core;
+using System.IO;
 
 namespace NRTA.Spider
 {
@@ -19,6 +20,16 @@ namespace NRTA.Spider
                 .AddJsonFile(Executor.UserListFilename, true)
                 .Build();
             ChromeOptions options = new ChromeOptions();
+            string chromePath = @"Chrome\App\Google Chrome\chrome.exe";
+            if (File.Exists(chromePath))
+            {
+                Console.WriteLine("检测到便携版Chrome，使用便携版");
+                options.BinaryLocation = chromePath;
+            }
+            else
+            {
+                Console.WriteLine("未检测到便携版Chrome，尝试使用本机自带Chrome");
+            }
             options.AddArgument("disable-web-security");
             options.AddUserProfilePreference("profile.default_content_setting_values.images", 2);
             var webDriver = new ChromeDriver(options);

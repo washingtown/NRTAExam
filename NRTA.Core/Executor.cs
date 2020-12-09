@@ -261,7 +261,7 @@ namespace NRTA.Core
                 action.MoveToElement(examItemToCraw).Perform();
                 _webWait.Until(d => examBtnToCraw.Displayed);
                 examBtnToCraw.Click();
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
                 //交卷
                 _webDriver.FindElement(By.Id("endExamBtn")).Click();
                 Thread.Sleep(500);
@@ -269,7 +269,7 @@ namespace NRTA.Core
                 //Thread.Sleep(5000);
                 _webWait.Until(d => d.Url.Contains("/result/inquire?examResultsId"));
                 Thread.Sleep(1000);
-                var lookAnswerBtn = _webWait.Until(d => d.FindElement(By.CssSelector(".footer-tab-2 a")));
+                var lookAnswerBtn = _webWait.Until(d => d.FindElement(By.CssSelector(".footer-tab-1 a")));
                 lookAnswerBtn.Click();
                 _webWait.Until(d => d.Url.Contains("/exam/exam_check?"));
                 //Thread.Sleep(3000);
@@ -305,6 +305,7 @@ namespace NRTA.Core
 
         private int saveQuestions(ReadOnlyCollection<IWebElement> questions)
         {
+            string letters = "ABCDEFGH";
             int count = 0;
             foreach (var question in questions)
             {
@@ -319,11 +320,15 @@ namespace NRTA.Core
                     Subject = subject,
                     Answer=rightAnswer
                 };
+                int answerIndex = 0;
                 foreach (var answer in answers)
                 {
                     string answerText = answer.Text;
                     string answerPrefix = Regex.Match(answerText, @"^[A-Z]").Value;
+                    if (string.IsNullOrEmpty(answerPrefix))
+                        answerPrefix = letters[answerIndex].ToString();
                     typeof(ExamQuestion).GetProperty(answerPrefix.ToUpper()).SetValue(dbQuestion,answerText);
+                    answerIndex++;
                 }
                 if (_dbContext.Questions.Find(id) != null)
                     continue;
@@ -375,6 +380,16 @@ namespace NRTA.Core
                 }
                 else
                 {
+                    if (answer == "正确")
+                    {
+                        answer = "A";
+                        //Console.WriteLine($"判断{id}正确");
+                    }
+                    if (answer == "错误")
+                    {
+                        answer = "B";
+                        //Console.WriteLine($"判断{id}错误");
+                    }
                     foreach (char letter in answer)
                     {
                         int num = letters.IndexOf(letter) + 1;
